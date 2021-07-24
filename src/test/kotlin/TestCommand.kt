@@ -1,23 +1,17 @@
 package io.github.theriverelder
 
 import io.github.theriverelder.data.*
-import io.github.theriverelder.util.DICE_1D100
-import io.github.theriverelder.util.Dice
-import io.github.theriverelder.util.check.CheckHardness
 import io.github.theriverelder.util.command.NyarCommandDispatcher
-import io.github.theriverelder.util.command.argument.*
-import io.github.theriverelder.util.genUid
 import okhttp3.internal.concat
 import java.io.File
 import java.io.PrintWriter
-import kotlin.system.exitProcess
 
 fun main() {
     val dispatcher = NyarCommandDispatcher<CommandEnv>()
 
     val env = CommandEnv(246810L, 1234567L)
 
-    SaveConfig.dirPath = "./test/"
+    SaveConfig.dirRoot = File("./test/")
 
     registerBuiltinCommands(dispatcher, true)
 

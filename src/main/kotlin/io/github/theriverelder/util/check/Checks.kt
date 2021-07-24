@@ -14,6 +14,12 @@ enum class CheckHardness(val ratio: Double) {
     override fun toString(): String = name.toLowerCase()
 }
 
+fun CheckHardness.toLocaleString(): String = when (this)  {
+    CheckHardness.NORMAL -> "普通"
+    CheckHardness.HARD -> "困难"
+    CheckHardness.EXTREME -> "极难"
+}
+
 enum class CheckResultType(val text: String? = null) {
     GREAT_FAILURE,
     FAILURE,
@@ -24,6 +30,15 @@ enum class CheckResultType(val text: String? = null) {
     ;
 
     override fun toString(): String = text ?: this.name.toLowerCase().replace(Regex("[^a-zA-Z0-9]+"), " ")
+}
+
+fun CheckResultType.toLocaleString(): String = when (this)  {
+    CheckResultType.GREAT_FAILURE -> "大失败"
+    CheckResultType.FAILURE -> "失败"
+    CheckResultType.NORMAL_SUCCESS -> "成功"
+    CheckResultType.HARD_SUCCESS -> "困难成功"
+    CheckResultType.EXTREME_SUCCESS -> "极难成功"
+    CheckResultType.GREAT_SUCCESS -> "大成功"
 }
 
 data class CheckResult(

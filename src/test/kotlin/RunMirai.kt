@@ -17,7 +17,7 @@ suspend fun main() {
 
     // 123456, ""
     val bot = MiraiConsole.addBot(744973592, "Nyar1ath0tep") {
-        protocol = BotConfiguration.MiraiProtocol.ANDROID_PAD
+        protocol = BotConfiguration.MiraiProtocol.ANDROID_PHONE
         fileBasedDeviceInfo()
     }.alsoLogin()
 

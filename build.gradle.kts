@@ -8,8 +8,8 @@ plugins {
     id("net.mamoe.mirai-console") version "2.4.2"
 }
 
-group = "org.example"
-version = "0.2.0"
+group = "io.github.theriverelder"
+version = "0.2.7"
 
 repositories {
     mavenLocal()

@@ -3,88 +3,62 @@ package io.github.theriverelder
 import io.github.theriverelder.data.Entity
 import io.github.theriverelder.data.Game
 import io.github.theriverelder.data.GameGroup
-import io.github.theriverelder.data.PropertyValue
 import io.github.theriverelder.util.check.CheckHardness
 import java.io.PrintWriter
 import java.lang.Long.parseLong
 import io.github.theriverelder.util.check.check
+import io.github.theriverelder.util.check.toLocaleString
 
-fun getGameGroup(groupUid: Long, output: PrintWriter): GameGroup? {
-    val group = GAME_GROUPS[groupUid]
-    if (group == null) {
-        output.println("Cannot find group with uid: $groupUid")
-    }
-    return group
+fun getGameGroup(groupUid: Long): GameGroup {
+    tryLoadGameGroup(groupUid)?.also { return@getGameGroup it }
+    return GAME_GROUPS[groupUid] ?: throw Exception("找不到组#$groupUid")
 }
 
-fun searchGame(name: String, output: PrintWriter): Game? {
+fun searchGame(name: String): Game {
     val games = GAMES.getAll().filter { it.name == name }
     if (games.size > 1) {
-        output.println("Duplicated game name: " + games.joinToString(", ") { "${it.name}(#${it.uid})" })
-        return null
+        throw Exception("存在重名团，使用#UID形式确定实体：" + games.joinToString("，") { "#${it.uid}" })
     } else if (games.isEmpty()) {
-        output.println("No game with name: $name")
+        throw Exception("不存在名为${name}的团")
+    }
+    return games[0]
+}
+
+fun trySearchGame(name: String): Game? {
+    val games = GAMES.getAll().filter { it.name == name }
+    if (games.size > 1) {
+        throw Exception("存在重名团，使用#UID形式确定实体：" + games.joinToString("，") { "#${it.uid}" })
+    } else if (games.isEmpty()) {
         return null
     }
     return games[0]
 }
 
-fun getGame(groupUid: Long, output: PrintWriter): Game? {
-    val group = getGameGroup(groupUid, output) ?: return null
-    val game = group.game
-    if (game == null) {
-        output.println("No running game for group uid: $groupUid")
-    }
-    return game
-}
+fun getGame(groupUid: Long): Game = getGameGroup(groupUid).game
 
-fun getEntity(group: GameGroup, game: Game, playerUid: Long, output: PrintWriter): Entity? {
-    val entity = group.getControl(playerUid)
+fun getEntity(game: Game, playerUid: Long): Entity = game.getControl(playerUid)
 
-    if (entity == null) {
-        output.println("Player dose not control any entity: #$playerUid")
-    } else if (!game.entities.hasItem(entity)) {
-        output.println("Entity ${entity.name}(#${entity.uid}) dose not belong to game: ${game.name}(#${game.uid})")
-    }
-    return entity
-}
-
-fun getEntity(game: Game, entityStr: String, output: PrintWriter): Entity? {
-    var entity: Entity? = null
-    if (entityStr.matches(Regex("^#\\d+$"))) {
-        entity = game.entities[parseLong(entityStr.substring(1))]
+fun getEntity(game: Game, entityStr: String): Entity {
+    return if (entityStr.matches(Regex("^#\\d+$"))) {
+        getOrLoadEntity(parseLong(entityStr.substring(1)))
     } else {
-        val entities = game.entities.getAll().filter { it.name == entityStr }
-        if (entities.size > 1) {
-            output.println("Duplicated name, use #UID instead: " + entities.joinToString(", ") { "${it.name}(uid: ${it.uid})" })
-            return null
-        }
-        entity = entities.getOrNull(0)
+        val entities = game.getInvolvedEntities().filter { it.name == entityStr }
+        if (entities.size > 1) throw Exception("存在重名实体，使用#UID形式确定实体：" + entities.joinToString("，") { "#${it.uid}" })
+        else if (entities.isEmpty()) throw Exception("未找到实体：$entityStr")
+        entities[0]
     }
-
-    if (entity == null) {
-        output.println("Entity not exists: $entityStr")
-        return null
-    }
-    return entity
 }
 
-fun getEntityProperty(game: Game, entity: Entity, propName: String, output: PrintWriter): PropertyValue? {
-    val prop = game.propertyTypes.getAll().find { it.name == propName }
-    if (prop == null) {
-        output.println("Property not exists in ${entity.name}: $propName")
-        return null
+fun checkEntityProperty(entity: Entity, propName: String, hardness: CheckHardness, output: PrintWriter) {
+    val value = entity.getProperty(propName)
+    val result = check(value, hardness)
+
+    with(result) {
+        output.println("检定 ${entity.name} 的 ${hardness.toLocaleString()} $propName：" +
+            "${target}/${value} -> ${points}, " +
+            "${if (succeed) "成功" else "失败"}! " +
+            "（${resultType.toLocaleString()}）"
+        )
     }
-    return entity.getOrCreateProperty(prop)
-}
 
-fun checkEntityProperty(game: Game, entity: Entity, propName: String, hardness: CheckHardness, output: PrintWriter) {
-    val prop = getEntityProperty(game, entity, propName, output) ?: return
-
-    val result = check(prop.value, hardness)
-    output.println("Check ${result.hardness} ${prop.type.name} of ${entity.name}: " +
-        "${result.target}/${result.value} -> ${result.points}, " +
-        "${if (result.succeed) "succeeded" else "failed"}! " +
-        "(as ${result.resultType})"
-    )
 }

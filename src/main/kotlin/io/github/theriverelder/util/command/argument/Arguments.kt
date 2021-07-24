@@ -14,3 +14,5 @@ public typealias number = NumberArgumentNode<CommandEnv>
 public typealias dice = DiceArgumentNode<CommandEnv>
 public typealias expression = ExpressionArgumentNode<CommandEnv>
 public typealias end = EndArgumentParser<CommandEnv>
+
+typealias ArgumentBuilder<E> = ArgumentNode<E>.() -> Unit

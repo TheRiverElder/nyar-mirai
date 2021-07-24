@@ -1,17 +1,19 @@
 package io.github.theriverelder.util
 
-open class Registry<K, V : RegistryItem<K>> {
+import java.util.function.Function
+
+open class Registry<K, V>(private val keyGetter: Function<V, K>) {
 
     private val defaultValue: V? = null
     private val data: MutableMap<K, V> = HashMap()
 
-    public open fun register(item: V): Unit {
-        data[item.key] = item
+    public open fun register(item: V) {
+        data[keyGetter.apply(item)] = item
     }
 
-    public fun unregister(item: V): V? = unregister(item.key)
+    public fun unregisterItem(item: V): V? = unregisterKey(keyGetter.apply(item))
 
-    public open fun unregister(key: K): V? = data.remove(key)
+    public open fun unregisterKey(key: K): V? = data.remove(key)
 
     public fun has(key: K): Boolean = data.containsKey(key)
 
@@ -36,17 +38,19 @@ open class Registry<K, V : RegistryItem<K>> {
 typealias RegisterEventHandler<K, V> = SubscribeRegistry<K, V>.(V) -> Nothing
 typealias UnregisterEventHandler<K, V> = SubscribeRegistry<K, V>.(V) -> Nothing
 
-class SubscribeRegistry<K, V : RegistryItem<K>> : Registry<K, V>() {
+class SubscribeRegistry<K, V>(keyGetter: Function<V, K>) : Registry<K, V>(keyGetter) {
 
     private val registerEventHandlers: MutableSet<RegisterEventHandler<K, V>> = HashSet()
     private val unregisterEventHandlers: MutableSet<UnregisterEventHandler<K, V>> = HashSet()
 
-    fun addRegisterEventHandler(handler: RegisterEventHandler<K, V>) {
+    fun addRegisterEventHandler(handler: RegisterEventHandler<K, V>): SubscribeRegistry<K, V> {
         registerEventHandlers.add(handler)
+        return this
     }
 
-    fun addUnregisterEventHandler(handler: UnregisterEventHandler<K, V>) {
+    fun addUnregisterEventHandler(handler: UnregisterEventHandler<K, V>): SubscribeRegistry<K, V> {
         unregisterEventHandlers.add(handler)
+        return this
     }
 
     override fun register(item: V): Unit {
@@ -54,15 +58,11 @@ class SubscribeRegistry<K, V : RegistryItem<K>> : Registry<K, V>() {
         registerEventHandlers.forEach { it(item) }
     }
 
-    override fun unregister(key: K): V? {
-        val r = super.unregister(key)
+    override fun unregisterKey(key: K): V? {
+        val r = super.unregisterKey(key)
         if (r != null) {
             unregisterEventHandlers.forEach { it(r) }
         }
         return r
     }
-}
-
-interface RegistryItem<T> {
-    val key: T
 }

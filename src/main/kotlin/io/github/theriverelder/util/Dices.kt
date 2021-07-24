@@ -5,6 +5,7 @@ import kotlin.random.Random
 
 val DICE_0D0: Dice = RandomDice(0, 0)
 val DICE_1D100: Dice = RandomDice(1, 100)
+val DICE_3D6: Dice = RandomDice(3, 6)
 
 interface Dice {
     fun roll(): Int

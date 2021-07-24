@@ -1,10 +1,6 @@
 package io.github.theriverelder
 
 import io.github.theriverelder.data.CommandEnv
-import io.github.theriverelder.data.Entity
-import io.github.theriverelder.data.Game
-import io.github.theriverelder.util.DICE_1D100
-import io.github.theriverelder.util.Dice
 import io.github.theriverelder.util.command.NyarCommandDispatcher
 import io.github.theriverelder.util.command.argument.*
 import io.github.theriverelder.util.createOutput
@@ -12,23 +8,19 @@ import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
 import net.mamoe.mirai.event.GlobalEventChannel
 import net.mamoe.mirai.event.events.GroupMessageEvent
-import net.mamoe.mirai.message.data.At
 import net.mamoe.mirai.message.data.PlainText
 import net.mamoe.mirai.message.data.content
 import net.mamoe.mirai.utils.info
 
 import net.mamoe.mirai.console.plugin.name
 import net.mamoe.mirai.console.plugin.version
-import okhttp3.internal.concat
-import java.io.PrintWriter
 import java.lang.StringBuilder
-import kotlin.system.exitProcess
 
 object PluginMain : KotlinPlugin(
     JvmPluginDescription(
         id = "io.github.theriverelder.nyarmirai",
         name = "NyarMirai",
-        version = "0.2.0"
+        version = "0.2.7"
     ) {
         author("The River Elder")
 
@@ -42,7 +34,10 @@ object PluginMain : KotlinPlugin(
     private val dispatcher: NyarCommandDispatcher<CommandEnv> = NyarCommandDispatcher()
 
     private fun setup() {
-        registerBuiltinCommands(dispatcher)
+        SaveConfig.dirRoot = this.resolveDataFile(".")
+        registerBuiltinCommands(dispatcher, true)
+        loadAll()
+        indexNames()
     }
 
     override fun onEnable() {
@@ -52,20 +47,27 @@ object PluginMain : KotlinPlugin(
 
         GlobalEventChannel.context(coroutineContext).subscribeAlways<GroupMessageEvent> {
             val c = message.content
-            if (c.length < 2 || !c.startsWith("/")) return@subscribeAlways
+            val lines = c.split("\n").map { it.trim() }
+            if (lines.isEmpty() || !lines.all { it.length >= 2 && it.startsWith("/") }) return@subscribeAlways
 
-            val input = message.content.substring(1)
             val builder = StringBuilder()
             val output = createOutput(builder)
             val env = CommandEnv(group.id, sender.id)
-            executeCommand(input, dispatcher, env, output)
+            lines.forEach { executeCommand(it.substring(1), dispatcher, env, output) }
+            saveAll()
+            PluginMain.logger.verbose("All changes are saved")
 
-            val returnMessage: String = builder.toString()
+            val returnMessage: String = builder.toString().trim()
             if (returnMessage.isNotEmpty()) {
                 group.sendMessage(PlainText(returnMessage))
             } else {
                 group.sendMessage(PlainText("啊嘞嘞~娜叶酱收到了你的请求，但是好像没有回复呢~"))
             }
         }
+    }
+
+    override fun onDisable() {
+        super.onDisable()
+        saveAll()
     }
 }
