@@ -13,7 +13,7 @@ fun commandGame(): LiteralArgumentNode<CommandEnv> {
             string(key = "name").add(
                 end { output ->
 
-                    val group: GameGroup = env.getOrCreateGroup()
+                    val group: GameGroup = env.getOrCreateGameGroup()
 
                     val name: String = get("name")
                     val game: Game = when (val operation: String = get("operation")) {

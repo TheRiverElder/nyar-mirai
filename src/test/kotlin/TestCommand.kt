@@ -9,7 +9,9 @@ import java.io.PrintWriter
 fun main() {
     val dispatcher = NyarCommandDispatcher<CommandEnv>()
 
-    val env = CommandEnv(246810L, 1234567L)
+    val testGroup = GroupTestImpl(1077572661L, "疯狂输出")
+    val testMember = MemberTestImpl(testGroup, 765375399L, "RiverElder")
+    val env = CommandEnv(testGroup, testMember)
 
     SaveConfig.dirRoot = File("./test/")
 

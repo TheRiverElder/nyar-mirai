@@ -17,9 +17,9 @@ fun commandCoc(): LiteralArgumentNode<CommandEnv> {
                         val includesLuck: Boolean = "includes_luck" == get<String>("includesLuck")
 
                         val distributePoints = totalPoints / step
-                        var properties: Array<String> = arrayOf("str", "con", "siz", "dex", "app", "int", "pow", "edu")
+                        var properties: Array<String> = arrayOf("力量", "体质", "体型", "敏捷", "外貌", "智力", "意志", "教育")
                         if (includesLuck) {
-                            properties += "luck"
+                            properties += "幸运"
                         }
                         val result: MutableMap<String, Int> = HashMap(properties.size)
                         properties.forEach { result[it] = 0 }
@@ -41,9 +41,9 @@ fun commandCoc(): LiteralArgumentNode<CommandEnv> {
                         val step: Int = get<Number>("step").toInt()
                         val dice: Dice = get("dice")
 
-                        val properties: Array<String> = arrayOf("str", "con", "siz", "dex", "app", "int", "pow", "edu")
+                        val properties: Array<String> = arrayOf("力量", "体质", "体型", "敏捷", "外貌", "智力", "意志", "教育")
 
-                        val result: MutableMap<String, Int> = HashMap(properties.size)
+                        val result: MutableMap<String, Int> = HashMap(properties.size + 1)
                         var totalPoints = 0
                         val luck = dice.roll() * step
                         for(prop in properties) {
@@ -51,7 +51,7 @@ fun commandCoc(): LiteralArgumentNode<CommandEnv> {
                             result[prop] = points
                             totalPoints += points
                         }
-                        result["luck"] = luck
+                        result["幸运"] = luck
 
 
                         output.println(properties.joinToString(", ") { "$it=${result[it]}" } + ", total: $totalPoints / ${totalPoints + luck}")

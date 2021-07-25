@@ -5,8 +5,6 @@ import io.github.theriverelder.data.CommandEnv
 import io.github.theriverelder.data.Game
 import io.github.theriverelder.data.GameGroup
 import io.github.theriverelder.getEntity
-import io.github.theriverelder.getGame
-import io.github.theriverelder.getGameGroup
 import io.github.theriverelder.util.check.CheckHardness
 import io.github.theriverelder.util.command.argument.LiteralArgumentNode
 import io.github.theriverelder.util.command.argument.end
@@ -34,7 +32,7 @@ fun commandCheck(): LiteralArgumentNode<CommandEnv> {
                 processor = { _, arg, _ -> hardnessMap[arg] }
             ).add(
                 end { output ->
-                    val group: GameGroup = env.getOrCreateGroup()
+                    val group: GameGroup = env.getOrCreateGameGroup()
                     val game: Game = env.getGame()
                     checkEntityProperty(
                         getEntity(game, env.playerUid),

@@ -20,7 +20,7 @@ object PluginMain : KotlinPlugin(
     JvmPluginDescription(
         id = "io.github.theriverelder.nyarmirai",
         name = "NyarMirai",
-        version = "0.2.7"
+        version = "0.2.8"
     ) {
         author("The River Elder")
 
@@ -52,7 +52,7 @@ object PluginMain : KotlinPlugin(
 
             val builder = StringBuilder()
             val output = createOutput(builder)
-            val env = CommandEnv(group.id, sender.id)
+            val env = CommandEnv(group, sender)
             lines.forEach { executeCommand(it.substring(1), dispatcher, env, output) }
             saveAll()
             PluginMain.logger.verbose("All changes are saved")

@@ -1,19 +1,21 @@
 package io.github.theriverelder.data
 
-import io.github.theriverelder.GAME_GROUPS
+import io.github.theriverelder.*
 import io.github.theriverelder.exception.NyarException
-import io.github.theriverelder.getOrLoadGame
-import io.github.theriverelder.getOrLoadGameGroup
-import io.github.theriverelder.tryLoadGameGroup
-import kotlinx.coroutines.runBlocking
+import net.mamoe.mirai.contact.Group
+import net.mamoe.mirai.contact.Member
+import java.lang.Exception
 
 class CommandEnv(
-    val groupUid: Long,
-    val playerUid: Long,
+    public val group: Group,
+    public val player: Member,
 ) {
-    fun getGroup(): GameGroup = getOrLoadGameGroup(groupUid)
+    val groupUid = group.id
+    val playerUid = player.id
 
-    fun getOrCreateGroup(): GameGroup = GAME_GROUPS[groupUid]
+    fun getGameGroup(): GameGroup = getOrLoadGameGroup(groupUid)
+
+    fun getOrCreateGameGroup(): GameGroup = GAME_GROUPS[groupUid]
         ?: run {
             val group = GameGroup(groupUid)
             GAME_GROUPS.register(group)
@@ -21,14 +23,33 @@ class CommandEnv(
         }
 
     fun getGame(): Game {
-        val group = getOrCreateGroup()
-        if (group.gameUid == 0L) throw NyarException("No running game for Group(#${groupUid})")
+        val group = getOrCreateGameGroup()
+        if (group.gameUid == 0L) throw NyarException("该群没有正在跑的团：（#${groupUid}）")
         return group.game
     }
 
+    fun tryGetGame(): Game? {
+        val group = getOrCreateGameGroup()
+        return try {
+            group.game
+        } catch (e: Exception) {
+            null
+        }
+    }
+
     fun getEntity(): Entity {
-        val group = getOrCreateGroup()
+        val group = getOrCreateGameGroup()
         val game = group.game
-        return game.getControl(playerUid) ?: throw NyarException("No entity is controlled by Player(#${playerUid})")
+        return game.getControl(playerUid)
+    }
+
+    fun tryGetEntity(): Entity? {
+        val group = getOrCreateGameGroup()
+        return try {
+            val game = group.game
+            game.getControl(playerUid)
+        } catch (e: Exception) {
+            null
+        }
     }
 }

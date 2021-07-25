@@ -42,7 +42,8 @@ fun getEntity(game: Game, entityStr: String): Entity {
     return if (entityStr.matches(Regex("^#\\d+$"))) {
         getOrLoadEntity(parseLong(entityStr.substring(1)))
     } else {
-        val entities = game.getInvolvedEntities().filter { it.name == entityStr }
+//        val entities = game.getInvolvedEntities().filter { it.name == entityStr }
+        val entities = ENTITIES.getAll().filter { it.name == entityStr }
         if (entities.size > 1) throw Exception("存在重名实体，使用#UID形式确定实体：" + entities.joinToString("，") { "#${it.uid}" })
         else if (entities.isEmpty()) throw Exception("未找到实体：$entityStr")
         entities[0]

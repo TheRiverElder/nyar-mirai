@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "io.github.theriverelder"
-version = "0.2.7"
+version = "0.2.8"
 
 repositories {
     mavenLocal()
