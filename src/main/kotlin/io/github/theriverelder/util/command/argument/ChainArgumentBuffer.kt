@@ -4,5 +4,4 @@ class ChainArgumentBuffer(val parent: ChainArgumentBuffer?, val key: String, val
 
     fun derive(key: String, value: Any): ChainArgumentBuffer = ChainArgumentBuffer(this, key, value)
 
-
 }

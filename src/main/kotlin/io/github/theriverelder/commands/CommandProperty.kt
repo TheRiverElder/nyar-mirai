@@ -1,15 +1,14 @@
 package io.github.theriverelder.commands
 
-import io.github.theriverelder.*
-import io.github.theriverelder.data.*
+import io.github.theriverelder.data.CommandEnv
+import io.github.theriverelder.data.Entity
 import io.github.theriverelder.util.command.argument.*
 
 fun commandProperty(): LiteralArgumentNode<CommandEnv> {
-    return literal(literals = arrayOf("property", "prop", "p", "属性")).addArguments(
-        string(key = "name", matcher = NAME_MATCHER).add(
-            literal(literals = arrayOf("remove", "rm")).add(
+    return command("property", "prop", "p", "属性") {
+        string("name") {
+            literal("remove", "rm") {
                 end { output ->
-                    val game: Game = env.getGame()
                     val self: Entity = env.getEntity()
 
                     val propName: String = get("name") ?: return@end Unit
@@ -17,12 +16,10 @@ fun commandProperty(): LiteralArgumentNode<CommandEnv> {
                     val prevValue = self.removeProperty(propName)
                     output.println("已删除属性：${self.name} 的 $propName（$prevValue）")
                 }
-            )
-        ).add(
-            literal(key = "operation", literals = arrayOf("set", "add", "minus", "=", "+", "-")).add(
-                number(key = "value").add(
+            }
+            literal("operation", "set", "add", "minus", "=", "+", "-", "设为" , "增加", "减少") {
+                number("value") {
                     end { output ->
-                        val game: Game = env.getGame()
                         val self: Entity = env.getEntity()
 
                         val propName: String = get("name")
@@ -31,14 +28,14 @@ fun commandProperty(): LiteralArgumentNode<CommandEnv> {
 
                         val prev = self.getProperty(propName)
                         when (operation) {
-                            "set", "=" -> self.setProperty(propName, value.toInt())
-                            "add", "+" -> self.changeProperty(propName, value.toInt())
-                            "minus", "-" -> self.changeProperty(propName, -value.toInt())
+                            "set", "=", "设为" -> self.setProperty(propName, value.toInt())
+                            "add", "+", "增加" -> self.changeProperty(propName, value.toInt())
+                            "minus", "-", "减少" -> self.changeProperty(propName, -value.toInt())
                         }
                         output.println("属性已更新：${self.name} 的 $propName: $prev -> ${self.getProperty(propName)}")
                     }
-                )
-            )
-        )
-    )
+                }
+            }
+        }
+    }
 }

@@ -1,6 +1,6 @@
 package io.github.theriverelder.util.command.argument
 
-import io.github.theriverelder.util.command.SafeReader
+import io.github.theriverelder.util.command.RawArgumentReader
 import io.github.theriverelder.util.factorial
 import java.lang.Double.parseDouble
 import java.util.*
@@ -11,8 +11,10 @@ val PART_REG = Regex("([+\\-*/%^()!])|(\\d+(\\.\\d+)?)")
 
 class ExpressionArgumentNode<E>(key: String, val digit: Boolean = false, processor: ArgumentProcessor<E>? = null) : ArgumentNode<E>(key, processor = processor) {
 
-    override fun doParse(reader: SafeReader, buffer: ChainArgumentBuffer): Number? {
-        val str = reader.readString()?.replace(Regex("\\s+"), "") ?: return null
+    override fun doParse(reader: RawArgumentReader, buffer: ChainArgumentBuffer): Number? {
+        if (!reader.hasMore()) return null
+
+        val str = reader.read().getString().replace(Regex("\\s+"), "")
 
 
         val valueStack = Stack<Number>()

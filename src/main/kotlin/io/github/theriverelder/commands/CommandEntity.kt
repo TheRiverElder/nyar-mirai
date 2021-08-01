@@ -5,10 +5,14 @@ import io.github.theriverelder.data.*
 import io.github.theriverelder.util.command.argument.*
 import io.github.theriverelder.util.genUid
 
+//fun matchName(s: String): Boolean = s.isNotEmpty() && s.all { Character.isLetter(it) || it != '·' }
+//
+//val NAME_MATCHER: ArgumentProcessor<CommandEnv> = { _, arg, _ -> matchName(arg as String) }
+
 fun commandEntity(): LiteralArgumentNode<CommandEnv> {
-    return literal(literals = arrayOf("entity", "e", "实体")).addArguments(
-        literal(literals = arrayOf("create", "c")).add(
-            string(key = "name", matcher = NAME_MATCHER).add(
+    return command("entity", "e", "实体") {
+        literal("create", "c", "创建") {
+            string("name") {
                 end { output ->
                     val game: Game = env.getGame()
                     val name: String = get("name")
@@ -21,11 +25,10 @@ fun commandEntity(): LiteralArgumentNode<CommandEnv> {
                     output.println("实体已创建：${entity.name}(#${entity.uid})")
                     output.println("已绑定：玩家(${env.playerUid}) <=> 实体(${entity.name}#${entity.uid})")
                 }
-            )
-        )
-    ).addArguments(
-        literal(literals = arrayOf("control", "ctrl")).add(
-            string(key = "name", matcher = NAME_MATCHER).add(
+            }
+        }
+        literal("control", "ctrl", "控制") {
+            string("name") {
                 end { output ->
                     val game: Game = env.getGame()
                     val name: String = get("name")
@@ -33,16 +36,15 @@ fun commandEntity(): LiteralArgumentNode<CommandEnv> {
                     game.setControl(env.playerUid, entity.uid)
                     output.println("Attached: Player(${env.playerUid}) <=> Entity(${entity.name}#${entity.uid})")
                 }
-            )
-        )
-    ).addArguments(
-        literal(literals = arrayOf("list")).add(
+            }
+        }
+        literal("list", "列表") {
             end { output ->
                 val game: Game = getGame(env.groupUid)
                 val entities = game.getInvolvedEntities()
                 output.println("团${game.name}中绑定了${entities.size}个实体：")
                 entities.forEach { output.println(it.name) }
             }
-        )
-    )
+        }
+    }
 }

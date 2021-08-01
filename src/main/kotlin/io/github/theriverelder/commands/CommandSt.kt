@@ -3,21 +3,17 @@ package io.github.theriverelder.commands
 import io.github.theriverelder.data.*
 import io.github.theriverelder.getGame
 import io.github.theriverelder.getGameGroup
-import io.github.theriverelder.util.command.argument.LiteralArgumentNode
-import io.github.theriverelder.util.command.argument.end
-import io.github.theriverelder.util.command.argument.literal
-import io.github.theriverelder.util.command.argument.string
+import io.github.theriverelder.util.command.argument.*
 import java.lang.Integer.parseInt
 
 fun commandSt(): LiteralArgumentNode<CommandEnv> {
-    return literal(literals = arrayOf("set", "st")).addArguments(
-        string("valueStr").add(
+    return command("set", "st") {
+        string("valueStr") {
             end { output ->
                 val valueStr: String = get("valueStr")
                 val reg = Regex("(\\D+)(\\d+)")
                 val values: MutableMap<String, Number> = HashMap()
 
-                val game: Game = env.getGame()
                 val entity: Entity = env.getEntity()
 
                 reg.findAll(valueStr).forEach {
@@ -31,6 +27,6 @@ fun commandSt(): LiteralArgumentNode<CommandEnv> {
                 output.println(values.entries.joinToString(", ") { "${it.key}=${it.value}" })
 
             }
-        )
-    )
+        }
+    }
 }

@@ -1,12 +1,8 @@
 package io.github.theriverelder.util.command.argument
 
-import io.github.theriverelder.util.command.SafeReader
 import io.github.theriverelder.util.command.CommandCollection
 import io.github.theriverelder.util.command.HintCollection
-
-interface ArgumentParser<E> {
-    fun parse(reader: SafeReader, buffer: ChainArgumentBuffer, res: CommandCollection, hints: HintCollection, env: E): Boolean
-}
+import io.github.theriverelder.util.command.RawArgumentReader
 
 abstract class ArgumentNode<E>(
     private val key: String? = null,
@@ -17,36 +13,33 @@ abstract class ArgumentNode<E>(
 
     private fun process(env: E, arg: Any, hints: HintCollection): Any? = if (processor != null) processor.invoke(env, arg, hints) else arg
 
-    override fun parse(reader: SafeReader, buffer: ChainArgumentBuffer, res: CommandCollection, hints: HintCollection, env: E): Boolean {
-        reader.skipWhitespace()
+    override fun parse(reader: RawArgumentReader, buffer: ChainArgumentBuffer, res: CommandCollection, hints: HintCollection, env: E): Boolean {
         val start: Int = reader.pointer
+
         var arg: Any? = doParse(reader, buffer)
-        if (arg == null) {
-            reader.pointer = start
-            hints.add("/${reader.slice().replace(Regex("\\s*$"), "")} <${getHint()}>")
-            if (default == null) return false
-            arg = default
+        arg = if (arg != null) {
+            process(env, arg, hints)
         } else {
-            arg = process(env, arg, hints)
+            hints.add("${reader.slice().replace(Regex("\\s*$"), "")} ${getHint()}")
+            default
         }
 
         if (arg == null) return false
 
         val thisArgument = setArgument(buffer, arg)
 
-        reader.skipWhitespace()
         var result = false
         val checkPoint = reader.pointer
         for (nextParser in nextParsers) {
+            reader.pointer = checkPoint
             if (nextParser.parse(reader, thisArgument, res, hints, env)) {
                 result = true
             }
-            reader.pointer = checkPoint
         }
         return result
     }
 
-    abstract fun doParse(reader: SafeReader, buffer: ChainArgumentBuffer): Any?
+    abstract fun doParse(reader: RawArgumentReader, buffer: ChainArgumentBuffer): Any?
 
     private val nextParsers: MutableList<ArgumentParser<E>> = ArrayList()
 
@@ -55,18 +48,17 @@ abstract class ArgumentNode<E>(
         return this
     }
 
-    fun setArgument(buffer: ChainArgumentBuffer, value: Any): ChainArgumentBuffer =
+    private fun setArgument(buffer: ChainArgumentBuffer, value: Any): ChainArgumentBuffer =
         if (key != null) buffer.derive(key, value) else buffer
 
-    fun getHint(): String {
-        return if (hintKey != null) hintKey + ":" + getValueHint() else getValueHint()
+    open fun getHint(): String {
+        return "<" + (if (hintKey != null) hintKey + ":" + getValueHint() else getValueHint()) + ">"
+    }
+
+    override fun getHelp(proceeding: String, res: MutableList<String>) {
+        val newProceeding = proceeding + " " + getHint()
+        nextParsers.forEach { it.getHelp(newProceeding, res) }
     }
 
     abstract fun getValueHint(): String
-}
-
-fun SafeReader.skipWhitespace() {
-    while (hasMore() && Character.isWhitespace(peek())) {
-        read()
-    }
 }

@@ -20,7 +20,7 @@ object PluginMain : KotlinPlugin(
     JvmPluginDescription(
         id = "io.github.theriverelder.nyarmirai",
         name = "NyarMirai",
-        version = "0.2.8"
+        version = "0.2.9"
     ) {
         author("The River Elder")
 

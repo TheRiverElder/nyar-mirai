@@ -4,13 +4,17 @@ import io.github.theriverelder.util.command.*
 
 class EndArgumentParser<E>(private val executor: NyarCommandExecutor<E>) : ArgumentParser<E> {
 
-    override fun parse(reader: SafeReader, buffer: ChainArgumentBuffer, res: CommandCollection, hints: HintCollection, env: E): Boolean {
+    override fun parse(reader: RawArgumentReader, buffer: ChainArgumentBuffer, res: CommandCollection, hints: HintCollection, env: E): Boolean {
         if (!reader.hasMore()) {
             res.add(BufferedCommand(buffer.flatten(env), executor))
             return true
         }
         hints.add(reader.slice())
         return false
+    }
+
+    override fun getHelp(proceeding: String, res: MutableList<String>) {
+        res.add(proceeding)
     }
 
 }

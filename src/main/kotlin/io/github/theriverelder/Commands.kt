@@ -12,23 +12,12 @@ import java.lang.Integer.parseInt
 import kotlin.system.exitProcess
 import kotlin.String
 
-fun matchName(s: String): Boolean {
-    if (s.isEmpty()) return false
-
-    for (ch in s) {
-        if (!Character.isLetter(ch) && ch != '·') return false
-    }
-    return true
-}
-
-val NAME_MATCHER: (String) -> Boolean = { matchName(it) }
-
 fun registerBuiltinCommands(dispatcher: NyarCommandDispatcher<CommandEnv>, doAddDangerousCommands: Boolean = false) {
     if (doAddDangerousCommands) {
-        dispatcher.register(commandExecuteFile(dispatcher))
-        dispatcher.register(commandSudo())
+        dispatcher.register(commandSudo(dispatcher))
     }
 
+    dispatcher.register(commandHelp(dispatcher))
     dispatcher.register(commandRoll())
     dispatcher.register(commandCalculate())
     dispatcher.register(commandEntity())
@@ -50,11 +39,12 @@ fun executeCommand(raw: String, dispatcher: NyarCommandDispatcher<CommandEnv>, e
             output.println(e.message)
         }
     } else {
-        output.println("${result.hints.size} Hint(s):")
-        val displayHints: Array<String> =
-            if (result.hints.size < 5) result.hints
-            else result.hints.copyOfRange(0, 4).concat("...")
-        displayHints.forEach { output.println("  $it") }
+        output.println("${result.hints.size}个提示：")
+//        val displayHints: Array<String> =
+//            if (result.hints.size < 5) result.hints
+//            else result.hints.copyOfRange(0, 4).concat("...")
+        val displayHints: Array<String> = result.hints
+        displayHints.forEach { output.println("/$it") }
     }
     output.flush()
 }

@@ -2,43 +2,54 @@ package io.github.theriverelder.commands
 
 import io.github.theriverelder.SaveConfig
 import io.github.theriverelder.data.CommandEnv
+import io.github.theriverelder.executeCommand
 import io.github.theriverelder.loadAll
 import io.github.theriverelder.saveAll
+import io.github.theriverelder.util.command.NyarCommandDispatcher
 import io.github.theriverelder.util.command.argument.*
 import java.io.File
 import java.io.PrintWriter
 import kotlin.system.exitProcess
 
-fun commandSudo(): LiteralArgumentNode<CommandEnv> {
-    return literal(literals = arrayOf("sudo")).addArguments(
-        literal(literals = arrayOf("save_all", "sa")).add(
+fun commandSudo(dispatcher: NyarCommandDispatcher<CommandEnv>): LiteralArgumentNode<CommandEnv> {
+    return command("sudo") {
+        literal("save_all", "sa") {
             end { output ->
                 saveAll()
                 output.println("已保存所有改变");
             }
-        )
-    ).addArguments(
-        literal(literals = arrayOf("load_all", "la")).add(
+        }
+        literal("load_all", "la") {
             end { output ->
                 loadAll()
                 output.println("已载入所有文件");
             }
-        )
-    ).addArguments(
-        literal(literals = arrayOf("dir")).add(
+        }
+        literal("dir") {
             end { output ->
                 output.println("根目录：${SaveConfig.dirRoot}")
                 printDirHierarchy(SaveConfig.dirRoot, 0, output)
             }
-        )
-    ).addArguments(
-        literal(literals = arrayOf("exit")).addArguments(
-            number("status", true, default = 0).add(
+        }
+        literal("exit") {
+            number("status", true, default = 0) {
                 end { exitProcess(getOrDefault<Int>("status", 0)) }
-                //                end { it.println("Exit with code: ${getOrDefault<Int>("status", 0)}") }
-            )
-        )
-    )
+                // end { it.println("Exit with code: ${getOrDefault<Int>("status", 0)}") }
+            }
+        }
+        literal("execute_file", "ef") {
+            string("filePath") {
+                end { output ->
+                    val filePath: String = get("filePath")
+                    val file = SaveConfig.getFile("script", filePath)
+                    if (!file.exists()) throw Exception("文件未找到：$filePath")
+
+                    val lines: List<String> = file.readLines()
+                    lines.forEach { executeCommand(it, dispatcher, env, output) }
+                }
+            }
+        }
+    }
 }
 
 fun printDirHierarchy(item: File, level: Int, output: PrintWriter) {

@@ -1,11 +1,16 @@
 package io.github.theriverelder.util.command.argument
 
 import io.github.theriverelder.util.*
+import io.github.theriverelder.util.command.RawArgumentReader
 import io.github.theriverelder.util.command.SafeReader
 import java.lang.Integer.parseInt
 
 class DiceArgumentNode<E>(key: String, default: Dice? = null, processor: ArgumentProcessor<E>? = null) : ArgumentNode<E>(key, default = default, processor = processor) {
-    override fun doParse(reader: SafeReader, buffer: ChainArgumentBuffer): Dice? {
+
+    override fun doParse(argReader: RawArgumentReader, buffer: ChainArgumentBuffer): Dice? {
+        if (!argReader.hasMore()) return null
+
+        val reader = SafeReader(argReader.read().getString())
         var checkPoint = reader.pointer
         var dice: Dice? = parseDiceItem(reader, true)
         val items: MutableList<Dice> = ArrayList()
