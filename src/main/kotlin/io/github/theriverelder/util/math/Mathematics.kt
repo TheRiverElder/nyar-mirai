@@ -1,6 +1,4 @@
-package io.github.theriverelder.util
-
-import io.github.theriverelder.util.command.SafeReader
+package io.github.theriverelder.util.math
 
 val FACTORIAL_CACHE: Map<Int, Int> = HashMap(16)
 

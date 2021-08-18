@@ -1,11 +1,13 @@
 package io.github.theriverelder.data
 
 import io.github.theriverelder.getOrLoadEntity
-import io.github.theriverelder.util.Serializable
-import java.io.DataInput
-import java.io.DataOutput
+import io.github.theriverelder.util.io.Serializable
+import io.github.theriverelder.util.io.ListData
+import io.github.theriverelder.util.io.LongData
+import io.github.theriverelder.util.io.MapData
+import io.github.theriverelder.util.io.StringData
 
-class Game(public val uid: Long, public var name: String = "") : Serializable {
+class Game(public var uid: Long = 0, public var name: String = "") : Serializable {
 
 //    val propertyTypes: Registry<Int, PropertyType> = Registry()
     var dirty: Boolean = true
@@ -58,33 +60,25 @@ class Game(public val uid: Long, public var name: String = "") : Serializable {
         return controlMap.values.map { getOrLoadEntity(it) }
     }
 
-    override fun read(input: DataInput) {
-        this.name = input.readUTF()
+    override fun read(input: MapData) {
+        uid = input.getLong("uid")
+        name = input.getString("name")
 
         controlMap.clear()
-        val controlMapSize = input.readInt()
-        for (i in 0 until controlMapSize) {
-            val playerUid = input.readLong()
-            val entityUid = input.readLong()
-            controlMap[playerUid] = entityUid
+        for (i in input.getList("controlMap").value) {
+            if (i is ListData) {
+                controlMap[i.getLong(0)] = i.getLong(1)
+            }
         }
+        dirty = true
     }
 
-    override fun write(output: DataOutput) {
-        output.writeLong(uid)
-        output.writeUTF(name)
-
-        output.writeInt(controlMap.size)
-        controlMap.forEach {
-            output.writeLong(it.key)
-            output.writeLong(it.value)
-        }
+    override fun write(output: MapData) {
+        output.value["uid"] = LongData(uid)
+        output.value["name"] = StringData(name)
+        output.value["controlMap"] = ListData(
+            *controlMap.map { ListData(LongData(it.key), LongData(it.value)) }.toTypedArray()
+        )
+        dirty = false
     }
-}
-
-fun readGame(input: DataInput): Game {
-    val gameUid = input.readLong()
-    val game = Game(gameUid)
-    game.read(input)
-    return game
 }

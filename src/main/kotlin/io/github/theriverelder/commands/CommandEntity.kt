@@ -3,7 +3,7 @@ package io.github.theriverelder.commands
 import io.github.theriverelder.*
 import io.github.theriverelder.data.*
 import io.github.theriverelder.util.command.argument.*
-import io.github.theriverelder.util.genUid
+import io.github.theriverelder.util.math.genUid
 
 //fun matchName(s: String): Boolean = s.isNotEmpty() && s.all { Character.isLetter(it) || it != '·' }
 //

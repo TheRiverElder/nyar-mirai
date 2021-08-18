@@ -34,8 +34,8 @@ enum class CheckResultType(val text: String? = null) {
 
 fun CheckResultType.toLocaleString(): String = when (this)  {
     CheckResultType.GREAT_FAILURE -> "大失败"
-    CheckResultType.FAILURE -> "失败"
-    CheckResultType.NORMAL_SUCCESS -> "成功"
+    CheckResultType.FAILURE -> "普通失败"
+    CheckResultType.NORMAL_SUCCESS -> "普通成功"
     CheckResultType.HARD_SUCCESS -> "困难成功"
     CheckResultType.EXTREME_SUCCESS -> "极难成功"
     CheckResultType.GREAT_SUCCESS -> "大成功"

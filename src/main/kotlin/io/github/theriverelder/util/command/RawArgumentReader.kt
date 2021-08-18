@@ -13,7 +13,9 @@ public class RawArgumentReader(val rawArguments: List<RawArgument>) {
     fun hasMore(): Boolean = pointer < rawArguments.size
 
     fun slice(): String {
-        val index = pointer.coerceAtMost(rawArguments.size - 1)
-        return if (index == 0) "" else rawArguments[index].slice()
+        if (rawArguments.isEmpty()) return ""
+        if (pointer >= rawArguments.size)
+            return with(rawArguments[rawArguments.size - 1]) { slice() + getString() }
+        return rawArguments[pointer].slice()
     }
 }

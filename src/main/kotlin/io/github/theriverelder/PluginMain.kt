@@ -1,9 +1,9 @@
 package io.github.theriverelder
 
 import io.github.theriverelder.data.CommandEnv
+import io.github.theriverelder.util.Container
 import io.github.theriverelder.util.command.NyarCommandDispatcher
-import io.github.theriverelder.util.command.argument.*
-import io.github.theriverelder.util.createOutput
+import io.github.theriverelder.util.io.createOutput
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
 import net.mamoe.mirai.event.GlobalEventChannel
@@ -14,13 +14,17 @@ import net.mamoe.mirai.utils.info
 
 import net.mamoe.mirai.console.plugin.name
 import net.mamoe.mirai.console.plugin.version
+import net.mamoe.mirai.contact.nameCardOrNick
+import java.io.File
+import java.io.FileWriter
+import java.io.IOException
 import java.lang.StringBuilder
 
 object PluginMain : KotlinPlugin(
     JvmPluginDescription(
         id = "io.github.theriverelder.nyarmirai",
         name = "NyarMirai",
-        version = "0.2.9"
+        version = "0.3.0"
     ) {
         author("The River Elder")
 
@@ -34,7 +38,7 @@ object PluginMain : KotlinPlugin(
     private val dispatcher: NyarCommandDispatcher<CommandEnv> = NyarCommandDispatcher()
 
     private fun setup() {
-        SaveConfig.dirRoot = this.resolveDataFile(".")
+        SaveConfig.dirRoot = this.dataFolder
         registerBuiltinCommands(dispatcher, true)
         loadAll()
         indexNames()
@@ -48,20 +52,40 @@ object PluginMain : KotlinPlugin(
         GlobalEventChannel.context(coroutineContext).subscribeAlways<GroupMessageEvent> {
             val c = message.content
             val lines = c.split("\n").map { it.trim() }
+
             if (lines.isEmpty() || !lines.all { it.length >= 2 && it.startsWith("/") }) return@subscribeAlways
+
+            val env = CommandEnv(group, sender)
+
+            if (!c.matches(Regex("^\\(\\)（）|\\(\\)（）$"))) {
+                GAME_GROUPS[group.id]?.also {
+                    val game = env.tryGetGame()
+                    val name = if (game != null && game.hasControl(sender.id)) {
+                        game.getControl(sender.id).name
+                    } else {
+                        sender.nameCardOrNick
+                    }
+                    it.recordWriter?.write("[${name}]\n")
+                    it.recordWriter?.write(c)
+                    it.recordWriter?.write("\n\n")
+                    it.recordWriter?.flush()
+                }
+            }
 
             val builder = StringBuilder()
             val output = createOutput(builder)
-            val env = CommandEnv(group, sender)
             lines.forEach { executeCommand(it.substring(1), dispatcher, env, output) }
             saveAll()
             PluginMain.logger.verbose("All changes are saved")
 
-            val returnMessage: String = builder.toString().trim()
-            if (returnMessage.isNotEmpty()) {
-                group.sendMessage(PlainText(returnMessage))
-            } else {
-                group.sendMessage(PlainText("啊嘞嘞~娜叶酱收到了你的请求，但是好像没有回复呢~"))
+            val returnMessage: String = builder.toString().trim().ifEmpty { "啊嘞嘞~娜叶酱收到了你的请求，但是好像没有回复呢~" }
+            group.sendMessage(returnMessage)
+
+            GAME_GROUPS[group.id]?.also {
+                it.recordWriter?.write("[${bot.nick}]\n")
+                it.recordWriter?.write(returnMessage)
+                it.recordWriter?.write("\n\n")
+                it.recordWriter?.flush()
             }
         }
     }

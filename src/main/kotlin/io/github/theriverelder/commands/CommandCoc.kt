@@ -3,7 +3,7 @@ package io.github.theriverelder.commands
 import io.github.theriverelder.data.CommandEnv
 import io.github.theriverelder.util.DICE_3D6
 import io.github.theriverelder.util.Dice
-import io.github.theriverelder.util.choose
+import io.github.theriverelder.util.math.choose
 import io.github.theriverelder.util.command.argument.*
 
 val INCLUDE_LUCK_FLAG = mapOf<String, Boolean>(

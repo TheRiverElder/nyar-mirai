@@ -1,4 +1,4 @@
-package io.github.theriverelder.util
+package io.github.theriverelder.util.math
 
 import java.io.DataOutput
 

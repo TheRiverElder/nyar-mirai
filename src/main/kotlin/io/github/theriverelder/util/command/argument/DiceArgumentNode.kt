@@ -25,7 +25,7 @@ class DiceArgumentNode<E>(key: String, default: Dice? = null, processor: Argumen
         return if (items.size == 1) items[0] else ComplexDice(items.toTypedArray())
     }
 
-    override fun getValueHint(): String = "dice"
+    override fun getValueHint(): String = "骰子"
 
     private fun parseDiceItem(reader: SafeReader, isFirst: Boolean): Dice? {
         var negative = false

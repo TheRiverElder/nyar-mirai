@@ -21,7 +21,7 @@ class NumberArgumentNode<E>(
         }
     }
 
-    override fun getValueHint(): String = if (digit) "digit_number" else "number"
+    override fun getValueHint(): String = if (digit) "整数" else "数字"
 }
 
 //fun SafeReader.readNumber(digit: Boolean = false): Number? {

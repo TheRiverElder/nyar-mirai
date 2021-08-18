@@ -28,6 +28,10 @@ class CommandEnv(
         return group.game
     }
 
+    fun tryGetGameGroup(): GameGroup? {
+        return GAME_GROUPS[this.groupUid]
+    }
+
     fun tryGetGame(): Game? {
         val group = getOrCreateGameGroup()
         return try {

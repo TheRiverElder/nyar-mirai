@@ -6,6 +6,14 @@ import io.github.theriverelder.util.command.argument.*
 
 fun commandProperty(): LiteralArgumentNode<CommandEnv> {
     return command("property", "prop", "p", "属性") {
+        literal("list", "ls") {
+            end { output ->
+                val entity: Entity = env.getEntity()
+                val properties = entity.getProperties()
+                output.println("${entity.name}的属性（${properties.size}个）：")
+                properties.forEach { output.println("${it.key}=${it.value}") }
+            }
+        }
         string("name") {
             literal("remove", "rm") {
                 end { output ->

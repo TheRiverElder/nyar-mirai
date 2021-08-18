@@ -1,4 +1,4 @@
-package io.github.theriverelder.util
+package io.github.theriverelder.util.io
 
 import java.io.PrintWriter
 import java.io.Writer

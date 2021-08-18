@@ -20,7 +20,10 @@ abstract class ArgumentNode<E>(
         arg = if (arg != null) {
             process(env, arg, hints)
         } else {
-            hints.add("${reader.slice().replace(Regex("\\s*$"), "")} ${getHint()}")
+            reader.pointer = start
+            if (reader.pointer > 0) {
+                hints.add("${reader.slice().replace(Regex("\\s*$"), "")} ${getHint()}")
+            }
             default
         }
 
@@ -52,7 +55,8 @@ abstract class ArgumentNode<E>(
         if (key != null) buffer.derive(key, value) else buffer
 
     open fun getHint(): String {
-        return "<" + (if (hintKey != null) hintKey + ":" + getValueHint() else getValueHint()) + ">"
+        val h = (if (hintKey != null) hintKey + ":" + getValueHint() else getValueHint())
+        return if (default == null) "<$h>" else "[$h]"
     }
 
     override fun getHelp(proceeding: String, res: MutableList<String>) {

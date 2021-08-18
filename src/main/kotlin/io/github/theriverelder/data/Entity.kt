@@ -1,12 +1,10 @@
 package io.github.theriverelder.data
 
 import java.lang.StringBuilder
-import io.github.theriverelder.util.Serializable
-import io.github.theriverelder.util.genUid
-import java.io.DataInput
-import java.io.DataOutput
+import io.github.theriverelder.util.io.Serializable
+import io.github.theriverelder.util.io.*
 
-class Entity(val uid: Long = genUid(), var name: String = "Entity") : Serializable {
+class Entity(var uid: Long = 0, var name: String = "Entity") : Serializable {
 
     private val properties: MutableMap<String, Int> = HashMap()
 
@@ -22,6 +20,8 @@ class Entity(val uid: Long = genUid(), var name: String = "Entity") : Serializab
 
     public fun changeProperty(key: String, delta: Int): Int = setProperty(key, getProperty(key) + delta)
 
+    public fun hasProperty(key: String): Boolean = properties.containsKey(key)
+
     public fun getProperty(key: String): Int = properties.getOrDefault(key, 0)
 
     public fun getProperties() = properties.entries
@@ -34,29 +34,26 @@ class Entity(val uid: Long = genUid(), var name: String = "Entity") : Serializab
         return 0
     }
 
-    override fun read(input: DataInput) {
-        // read name
-        this.name = input.readUTF()
+    override fun read(input: MapData) {
+        uid = input.getLong("uid")
+        name = input.getString("name")
 
-        // read properties
-        val propertyCount = input.readInt()
         properties.clear()
-        for (i in 0 until propertyCount) {
-            val key = input.readUTF()
-            val value = input.readInt()
-            properties[key] = value
+        for (i in input.getList("properties").value) {
+            if (i is ListData) {
+                properties[i.getString(0)] = i.getInt(1)
+            }
         }
+        dirty = true
     }
 
-    override fun write(output: DataOutput) {
-        output.writeLong(uid)
-        output.writeUTF(name)
-
-        output.writeInt(properties.size)
-        properties.forEach {
-            output.writeUTF(it.key)
-            output.writeInt(it.value)
-        }
+    override fun write(output: MapData) {
+        output.value["uid"] = LongData(uid)
+        output.value["name"] = StringData(name)
+        output.value["properties"] = ListData(
+            *properties.map { ListData(StringData(it.key), IntData(it.value)) }.toTypedArray()
+        )
+        dirty = false
     }
 
 
@@ -68,11 +65,4 @@ class Entity(val uid: Long = genUid(), var name: String = "Entity") : Serializab
         return builder.toString()
     }
 
-}
-
-fun readEntity(input: DataInput): Entity {
-    val uid = input.readLong()
-    val entity = Entity(uid)
-    entity.read(input)
-    return entity
 }

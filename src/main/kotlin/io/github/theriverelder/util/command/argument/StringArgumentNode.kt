@@ -15,7 +15,5 @@ class StringArgumentNode<E>(
         return if (this.allowEmpty) s else if (s.isEmpty()) null else s
     }
 
-    override fun getHint(): String = "\"${getValueHint()}\""
-
-    override fun getValueHint(): String = "string"
+    override fun getValueHint(): String = "字符串"
 }

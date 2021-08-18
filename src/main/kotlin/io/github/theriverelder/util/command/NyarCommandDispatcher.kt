@@ -1,9 +1,6 @@
 package io.github.theriverelder.util.command
 
-import io.github.theriverelder.util.command.argument.ArgumentNode
-import io.github.theriverelder.util.command.argument.LiteralArgumentNode
-import io.github.theriverelder.util.command.argument.RawArgument
-import io.github.theriverelder.util.command.argument.RootArgumentParser
+import io.github.theriverelder.util.command.argument.*
 import kotlin.text.StringBuilder
 
 class DispatchResult(
@@ -32,7 +29,10 @@ class NyarCommandDispatcher<E> {
         return this
     }
 
-    fun register(command: ArgumentNode<E>): NyarCommandDispatcher<E> {
+    fun register(command: ArgumentNode<E>, init: ArgumentNodeInitiator<E>? = null): NyarCommandDispatcher<E> {
+        if (init != null) {
+            command.init()
+        }
         rootParser.add(command)
         return this
     }

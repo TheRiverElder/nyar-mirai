@@ -1,7 +1,7 @@
 package io.github.theriverelder.util.command.argument
 
 import io.github.theriverelder.util.command.RawArgumentReader
-import io.github.theriverelder.util.factorial
+import io.github.theriverelder.util.math.factorial
 import java.lang.Double.parseDouble
 import java.util.*
 import kotlin.math.pow
@@ -55,7 +55,7 @@ class ExpressionArgumentNode<E>(key: String, val digit: Boolean = false, process
         return if (valueStack.size != 1) null else valueStack.pop()
     }
 
-    override fun getValueHint(): String = "expression"
+    override fun getValueHint(): String = "表达式"
 
 }
 

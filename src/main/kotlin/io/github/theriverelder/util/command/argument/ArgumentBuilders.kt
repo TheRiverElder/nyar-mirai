@@ -79,6 +79,20 @@ fun <E> ArgumentNode<E>.string(
     return node
 }
 
+fun <E> ArgumentNode<E>.stringList(
+    key: String,
+    allowEmpty: Boolean = true,
+    init: ArgumentNodeInitiator<E>
+): StringListArgumentNode<E> {
+    val node = StringListArgumentNode<E>(
+        key = key,
+        allowEmpty = allowEmpty,
+    )
+    node.init()
+    this.add(node)
+    return node
+}
+
 fun <E> ArgumentNode<E>.number(
     key: String,
     digit: Boolean = true,

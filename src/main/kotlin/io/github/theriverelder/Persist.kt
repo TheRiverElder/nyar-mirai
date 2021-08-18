@@ -1,6 +1,7 @@
 package io.github.theriverelder
 
 import io.github.theriverelder.data.*
+import io.github.theriverelder.util.io.readMapData
 import java.io.*
 import java.lang.Exception
 
@@ -39,7 +40,10 @@ fun loadAll() {
         it.listFiles()?.forEach { file ->
             try {
                 val stream = FileInputStream(file)
-                GAMES.register(readGame(DataInputStream(stream)))
+                val game = Game()
+                val data = readMapData(DataInputStream(stream))
+                game.read(data)
+                GAMES.register(game)
                 stream.close()
             } catch (e: Exception) {
                 PluginMain.logger.error(e)
@@ -51,7 +55,10 @@ fun loadAll() {
         it.listFiles()?.forEach { file ->
             try {
                 val stream = FileInputStream(file)
-                GAME_GROUPS.register(readGameGroup(DataInputStream(stream)))
+                val gameGroup = GameGroup()
+                val data = readMapData(DataInputStream(stream))
+                gameGroup.read(data)
+                GAME_GROUPS.register(gameGroup)
                 stream.close()
             } catch (e: Exception) {
                 PluginMain.logger.error(e)
@@ -63,7 +70,10 @@ fun loadAll() {
         it.listFiles()?.forEach { file ->
             try {
                 val stream = FileInputStream(file)
-                ENTITIES.register(readEntity(DataInputStream(stream)))
+                val entity = Entity()
+                val data = readMapData(DataInputStream(stream))
+                entity.read(data)
+                ENTITIES.register(entity)
                 stream.close()
             } catch (e: Exception) {
                 PluginMain.logger.error(e)
@@ -77,10 +87,12 @@ fun tryLoadEntity(entityUid: Long): Entity? {
         val file = File(this, entityUid.toString())
         if (!file.exists() || !file.isFile) return null
         val input = DataInputStream(FileInputStream(file))
-        val result = readEntity(input)
-        ENTITIES.register(result)
+        val entity = Entity()
+        val data = readMapData(input)
+        entity.read(data)
+        ENTITIES.register(entity)
         input.close()
-        return result
+        return entity
     }
 }
 
@@ -89,10 +101,12 @@ fun tryLoadGame(gameUid: Long): Game? {
         val file = File(this, gameUid.toString())
         if (!file.exists() || !file.isFile) return null
         val input = DataInputStream(FileInputStream(file))
-        val result = readGame(input)
-        GAMES.register(result)
+        val game = Game()
+        val data = readMapData(input)
+        game.read(data)
+        GAMES.register(game)
         input.close()
-        return result
+        return game
     }
 }
 
@@ -101,9 +115,11 @@ fun tryLoadGameGroup(groupUid: Long): GameGroup? {
         val file = File(this, groupUid.toString())
         if (!file.exists() || !file.isFile) return null
         val input = DataInputStream(FileInputStream(file))
-        val result = readGameGroup(input)
-        GAME_GROUPS.register(result)
+        val gameGroup = GameGroup()
+        val data = readMapData(input)
+        gameGroup.read(data)
+        GAME_GROUPS.register(gameGroup)
         input.close()
-        return result
+        return gameGroup
     }
 }

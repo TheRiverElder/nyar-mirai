@@ -5,7 +5,7 @@ import io.github.theriverelder.data.CommandEnv
 import io.github.theriverelder.data.Game
 import io.github.theriverelder.data.GameGroup
 import io.github.theriverelder.util.command.argument.*
-import io.github.theriverelder.util.genUid
+import io.github.theriverelder.util.math.genUid
 
 fun commandGame(): LiteralArgumentNode<CommandEnv> {
     return command("game", "团") {
