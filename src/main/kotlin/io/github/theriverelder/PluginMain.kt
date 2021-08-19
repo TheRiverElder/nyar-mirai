@@ -15,6 +15,7 @@ import net.mamoe.mirai.utils.info
 import net.mamoe.mirai.console.plugin.name
 import net.mamoe.mirai.console.plugin.version
 import net.mamoe.mirai.contact.nameCardOrNick
+import net.mamoe.mirai.message.data.MessageSource.Key.quote
 import java.io.File
 import java.io.FileWriter
 import java.io.IOException
@@ -24,7 +25,7 @@ object PluginMain : KotlinPlugin(
     JvmPluginDescription(
         id = "io.github.theriverelder.nyarmirai",
         name = "NyarMirai",
-        version = "0.3.0"
+        version = "0.3.1"
     ) {
         author("The River Elder")
 
@@ -79,7 +80,7 @@ object PluginMain : KotlinPlugin(
             PluginMain.logger.verbose("All changes are saved")
 
             val returnMessage: String = builder.toString().trim().ifEmpty { "啊嘞嘞~娜叶酱收到了你的请求，但是好像没有回复呢~" }
-            group.sendMessage(returnMessage)
+            group.sendMessage(message.quote() + returnMessage)
 
             GAME_GROUPS[group.id]?.also {
                 it.recordWriter?.write("[${bot.nick}]\n")
