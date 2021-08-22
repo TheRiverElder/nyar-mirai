@@ -33,34 +33,42 @@ fun commandCheck(): LiteralArgumentNode<CommandEnv> {
                 processor = { _, arg, _ -> HARDNESS_MAP[arg] }
             ) {
                 number("initialValue", true) {
-                    end { output ->
-                        val property: String = get("property")
-                        val hardness: CheckHardness = getOrDefault("hardness", CheckHardness.NORMAL)
-                        val initialValue: Int = get<Number>("initialValue").toInt()
+                    string("targetName", default = "") {
+                        end { output ->
+                            val targetName: String = getOrDefault("targetName", "")
+                            val property: String = get("property")
+                            val hardness: CheckHardness = getOrDefault("hardness", CheckHardness.NORMAL)
+                            val initialValue: Int = get<Number>("initialValue").toInt()
 
-                        val entity: Entity = env.getEntity()
-                        if (!entity.hasProperty(property)) {
-                            entity.setProperty(property, initialValue)
+                            val entity: Entity = env.getEntity()
+                            if (!entity.hasProperty(property)) {
+                                entity.setProperty(property, initialValue)
+                            }
+
+                            checkEntityProperty(
+                                entity,
+                                property,
+                                initialValue,
+                                hardness,
+                                output,
+                                targetName
+                            )
                         }
-
-                        checkEntityProperty(
-                            entity,
-                            property,
-                            initialValue,
-                            hardness,
-                            output,
-                        )
                     }
                 }
-                end { output ->
-                    val game: Game = env.getGame()
-                    checkEntityProperty(
-                        getEntity(game, env.playerUid),
-                        get("property"),
-                        -1,
-                        getOrDefault("hardness", CheckHardness.NORMAL),
-                        output,
-                    )
+                string("targetName", default = "") {
+                    end { output ->
+                        val targetName: String = getOrDefault("targetName", "")
+                        val game: Game = env.getGame()
+                        checkEntityProperty(
+                            getEntity(game, env.playerUid),
+                            get("property"),
+                            -1,
+                            getOrDefault("hardness", CheckHardness.NORMAL),
+                            output,
+                            targetName
+                        )
+                    }
                 }
             }
         }

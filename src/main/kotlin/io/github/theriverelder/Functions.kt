@@ -50,14 +50,20 @@ fun getEntity(game: Game, entityStr: String): Entity {
     }
 }
 
-fun checkEntityProperty(entity: Entity, propName: String, initialValue: Int, hardness: CheckHardness, output: PrintWriter) {
+fun checkEntityProperty(entity: Entity, propName: String, initialValue: Int, hardness: CheckHardness, output: PrintWriter, targetName: String = "") {
     val value = if (initialValue > 0) initialValue else entity.getProperty(propName)
     val result = check(value, hardness)
 
     with(result) {
+        val msg = if (targetName.isBlank()) {
+            if (succeed) "成功了呢" else "失败了哟"
+        } else {
+            if (succeed) "${entity.name}把${targetName}给${propName}了呢"
+            else "${entity.name}没能把${targetName}给${propName}哟"
+        }
         output.println("检定${entity.name}的${if (hardness == CheckHardness.NORMAL) "" else hardness.toLocaleString()}$propName：" +
             "${target}/${value} -> ${points}, " +
-            "${if (succeed) "成功了呢" else "失败了哟"}! " +
+            "${msg}! " +
             "（是${resultType.toLocaleString()}哦）"
         )
     }
