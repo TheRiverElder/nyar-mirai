@@ -32,7 +32,7 @@ fun commandCheck(): LiteralArgumentNode<CommandEnv> {
                 default = CheckHardness.NORMAL,
                 processor = { _, arg, _ -> HARDNESS_MAP[arg] }
             ) {
-                number("initialValue", true) {
+                number("initialValue", true, default = -1) {
                     string("targetName", default = "") {
                         end { output ->
                             val targetName: String = getOrDefault("targetName", "")
@@ -54,20 +54,6 @@ fun commandCheck(): LiteralArgumentNode<CommandEnv> {
                                 targetName
                             )
                         }
-                    }
-                }
-                string("targetName", default = "") {
-                    end { output ->
-                        val targetName: String = getOrDefault("targetName", "")
-                        val game: Game = env.getGame()
-                        checkEntityProperty(
-                            getEntity(game, env.playerUid),
-                            get("property"),
-                            -1,
-                            getOrDefault("hardness", CheckHardness.NORMAL),
-                            output,
-                            targetName
-                        )
                     }
                 }
             }

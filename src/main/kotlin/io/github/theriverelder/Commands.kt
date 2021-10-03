@@ -2,13 +2,11 @@ package io.github.theriverelder
 
 import io.github.theriverelder.commands.*
 import io.github.theriverelder.data.CommandEnv
+import io.github.theriverelder.data.Entity
 import io.github.theriverelder.util.Dice
 import io.github.theriverelder.util.check.CheckHardness
 import io.github.theriverelder.util.command.NyarCommandDispatcher
-import io.github.theriverelder.util.command.argument.DiceArgumentNode
-import io.github.theriverelder.util.command.argument.StringArgumentNode
-import io.github.theriverelder.util.command.argument.end
-import io.github.theriverelder.util.command.argument.options
+import io.github.theriverelder.util.command.argument.*
 import okhttp3.internal.concat
 import java.io.PrintWriter
 
@@ -62,18 +60,21 @@ fun registerBuiltinCommands(dispatcher: NyarCommandDispatcher<CommandEnv>, doAdd
             default = CheckHardness.NORMAL,
             processor = { _, arg, _ -> HARDNESS_MAP[arg] }
         ) {
-            end { output ->
-                val propName = get<String>("propName")
-                val hardness = get<CheckHardness>("hardness")
-                val entity = env.getEntity()
+            string("targetName", default = "") {
+                end { output ->
+                    val targetName: String = getOrDefault("targetName", "")
+                    val property: String = get("property")
+                    val hardness: CheckHardness = getOrDefault("hardness", CheckHardness.NORMAL)
 
-                checkEntityProperty(
-                    entity,
-                    propName,
-                    -1,
-                    hardness,
-                    output
-                )
+                    checkEntityProperty(
+                        env.getEntity(),
+                        property,
+                        -1,
+                        hardness,
+                        output,
+                        targetName
+                    )
+                }
             }
         }
     }

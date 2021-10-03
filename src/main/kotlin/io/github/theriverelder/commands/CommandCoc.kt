@@ -20,12 +20,13 @@ fun commandCoc(): LiteralArgumentNode<CommandEnv> {
                 options(
                     "includesLuck",
                     *INCLUDE_LUCK_FLAG.keys.toTypedArray(),
+                    processor = { _, arg, _ -> INCLUDE_LUCK_FLAG[arg] },
                     default = true
                 ) {
                     end { output ->
                         val totalPoints: Int = get<Number>("totalPoints").toInt()
                         val step: Int = get<Number>("step").toInt()
-                        val includesLuck: Boolean = get("includesLuck")
+                        val includesLuck: Boolean = get<Boolean>("includesLuck")
 
                         val distributePoints = totalPoints / step
                         var properties: Array<String> = arrayOf("力量", "体质", "体型", "敏捷", "外貌", "智力", "意志", "教育")

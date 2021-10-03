@@ -10,6 +10,8 @@ import net.mamoe.mirai.console.plugin.version
 import net.mamoe.mirai.contact.nameCardOrNick
 import net.mamoe.mirai.event.GlobalEventChannel
 import net.mamoe.mirai.event.events.GroupMessageEvent
+import net.mamoe.mirai.event.subscribeMessages
+import net.mamoe.mirai.event.subscribeOtherClientMessages
 import net.mamoe.mirai.message.data.MessageSource.Key.quote
 import net.mamoe.mirai.message.data.content
 import net.mamoe.mirai.utils.info
@@ -18,7 +20,7 @@ object PluginMain : KotlinPlugin(
     JvmPluginDescription(
         id = "io.github.theriverelder.nyarmirai",
         name = "NyarMirai",
-        version = "0.3.2"
+        version = "0.3.4"
     ) {
         author("The River Elder")
 
