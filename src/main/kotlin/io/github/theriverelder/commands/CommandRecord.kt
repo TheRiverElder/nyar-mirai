@@ -16,7 +16,7 @@ fun commandRecord(): LiteralArgumentNode<CommandEnv> {
                     val fileName = get<String>("fileName")
                     group.recordFileName = fileName
                     output.println("开始记录群(${env.groupUid})：$fileName")
-                    output.println("所有以括号（无论全角或半角）开始或结束的文字都会被当作超游哦~")
+//                    output.println("所有以括号（无论全角或半角）开始或结束的文字都会被当作超游哦~")
                 }
             }
             end { output ->
@@ -24,7 +24,7 @@ fun commandRecord(): LiteralArgumentNode<CommandEnv> {
                 val fileName = group.uid.toString() + ".txt"
                 group.recordFileName = fileName
                 output.println("开始记录群(${env.groupUid})：$fileName")
-                output.println("所有以括号（无论全角或半角）开始或结束的文字都会被当作超游哦~")
+//                output.println("所有以括号（无论全角或半角）开始或结束的文字都会被当作超游哦~")
             }
         }
         literal("stop", "停止") {

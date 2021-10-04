@@ -1,6 +1,7 @@
 package io.github.theriverelder
 
 import io.github.theriverelder.data.CommandEnv
+import io.github.theriverelder.data.Entity
 import io.github.theriverelder.util.command.NyarCommandDispatcher
 import io.github.theriverelder.util.io.createOutput
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
@@ -20,7 +21,7 @@ object PluginMain : KotlinPlugin(
     JvmPluginDescription(
         id = "io.github.theriverelder.nyarmirai",
         name = "NyarMirai",
-        version = "0.3.4"
+        version = "0.3.5"
     ) {
         author("The River Elder")
 
@@ -49,24 +50,24 @@ object PluginMain : KotlinPlugin(
             val c = message.content
             val lines = c.split("\n").map { it.trim() }
 
-            if (lines.isEmpty() || !lines.all { it.length >= 2 && it.startsWith("/") }) return@subscribeAlways
-
             val env = CommandEnv(group, sender)
 
-            if (!c.matches(Regex("^\\(\\)（）|\\(\\)（）$"))) {
-                GAME_GROUPS[group.id]?.also {
-                    val game = env.tryGetGame()
-                    val name = if (game != null && game.hasControl(sender.id)) {
-                        game.getControl(sender.id).name
-                    } else {
-                        sender.nameCardOrNick
-                    }
-                    it.recordWriter?.write("[${name}]\n")
-                    it.recordWriter?.write(c)
-                    it.recordWriter?.write("\n\n")
-                    it.recordWriter?.flush()
+            GAME_GROUPS[group.id]?.also {
+                val game = env.tryGetGame()
+                var entity: Entity? = null
+                val name = if (game != null && game.hasControl(sender.id)) {
+                    entity = game.getControl(sender.id)
+                    entity.name
+                } else {
+                    sender.nameCardOrNick
                 }
+                it.recordWriter?.write("[name=${name},senderId=${sender.id},entityId=${entity?.uid ?: 0}]\n")
+                it.recordWriter?.write(c.lines().joinToString("\n") { line -> ">$line" })
+                it.recordWriter?.write("\n\n")
+                it.recordWriter?.flush()
             }
+
+            if (lines.isEmpty() || !lines.all { it.length >= 2 && it.startsWith("/") }) return@subscribeAlways
 
             val builder = StringBuilder()
             val output = createOutput(builder)
@@ -78,8 +79,8 @@ object PluginMain : KotlinPlugin(
             group.sendMessage(message.quote() + returnMessage)
 
             GAME_GROUPS[group.id]?.also {
-                it.recordWriter?.write("[${bot.nick}]\n")
-                it.recordWriter?.write(returnMessage)
+                it.recordWriter?.write("[name=${bot.nick},senderId=${bot.id},entityId=0]\n")
+                it.recordWriter?.write(returnMessage.lines().joinToString("\n") { line -> ">$line" })
                 it.recordWriter?.write("\n\n")
                 it.recordWriter?.flush()
             }

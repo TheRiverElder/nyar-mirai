@@ -22,6 +22,7 @@ class GameGroup(uid: Long = 0) : Serializable {
                 recordWriter?.flush()
                 recordWriter?.close()
                 recordWriter = null
+                field = fileName
             } else if (fileName.matches(Regex(".+"))) {
                 if (fileName == field) return
                 field = fileName
