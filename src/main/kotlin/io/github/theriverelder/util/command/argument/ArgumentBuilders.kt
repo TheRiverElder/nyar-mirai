@@ -1,7 +1,6 @@
 package io.github.theriverelder.util.command.argument
 
-import io.github.theriverelder.data.CommandEnv
-import io.github.theriverelder.util.Dice
+import io.github.theriverelder.util.math.Dice
 import io.github.theriverelder.util.command.HintCollection
 import io.github.theriverelder.util.command.NyarCommandExecutor
 

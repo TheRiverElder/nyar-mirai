@@ -1,4 +1,4 @@
-package io.github.theriverelder.util
+package io.github.theriverelder.util.math
 
 import java.lang.Integer.max
 import kotlin.random.Random

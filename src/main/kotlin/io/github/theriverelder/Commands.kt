@@ -2,8 +2,7 @@ package io.github.theriverelder
 
 import io.github.theriverelder.commands.*
 import io.github.theriverelder.data.CommandEnv
-import io.github.theriverelder.data.Entity
-import io.github.theriverelder.util.Dice
+import io.github.theriverelder.util.math.Dice
 import io.github.theriverelder.util.check.CheckHardness
 import io.github.theriverelder.util.command.NyarCommandDispatcher
 import io.github.theriverelder.util.command.argument.*
@@ -15,6 +14,7 @@ fun registerBuiltinCommands(dispatcher: NyarCommandDispatcher<CommandEnv>, doAdd
         dispatcher.register(commandSudo(dispatcher))
     }
 
+    dispatcher.register(commandSanCheck())
     dispatcher.register(commandRecord())
     dispatcher.register(commandHelp(dispatcher))
     dispatcher.register(commandAlias())

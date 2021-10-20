@@ -1,7 +1,7 @@
 package io.github.theriverelder.util.check
 
-import io.github.theriverelder.util.DICE_1D100
-import io.github.theriverelder.util.Dice
+import io.github.theriverelder.util.math.DICE_1D100
+import io.github.theriverelder.util.math.Dice
 
 enum class CheckHardness(val ratio: Double) {
     NORMAL(1.0),

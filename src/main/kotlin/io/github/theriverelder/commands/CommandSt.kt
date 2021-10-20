@@ -1,8 +1,6 @@
 package io.github.theriverelder.commands
 
 import io.github.theriverelder.data.*
-import io.github.theriverelder.getGame
-import io.github.theriverelder.getGameGroup
 import io.github.theriverelder.util.command.argument.*
 import java.lang.Integer.parseInt
 

@@ -3,8 +3,6 @@ package io.github.theriverelder.commands
 import io.github.theriverelder.checkEntityProperty
 import io.github.theriverelder.data.CommandEnv
 import io.github.theriverelder.data.Entity
-import io.github.theriverelder.data.Game
-import io.github.theriverelder.getEntity
 import io.github.theriverelder.util.check.CheckHardness
 import io.github.theriverelder.util.command.argument.*
 

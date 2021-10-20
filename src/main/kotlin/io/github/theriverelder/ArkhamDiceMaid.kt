@@ -4,12 +4,7 @@ import io.github.theriverelder.data.Entity
 import io.github.theriverelder.data.Game
 import io.github.theriverelder.data.GameGroup
 import io.github.theriverelder.util.Registry
-import io.github.theriverelder.util.io.MapData
-import io.github.theriverelder.util.io.writeMapData
-import java.io.DataOutputStream
 import java.io.File
-import java.io.FileOutputStream
-import java.nio.file.Path
 
 val GAME_GROUPS: Registry<Long, GameGroup> = Registry { it.uid }
 val GAMES: Registry<Long, Game> = Registry { it.uid }
@@ -46,41 +41,4 @@ fun ensureDirectoryExists(dirName: String): File? {
     if (!dir.exists()) return if (dir.mkdirs()) dir else null
     if (!dir.isDirectory) return null
     return dir
-}
-
-fun save(all: Boolean = false) {
-    if (all) {
-        GAMES.items.forEach { it.save() }
-        GAME_GROUPS.items.forEach { it.save() }
-    } else {
-	    GAMES.items.filter { it.dirty } .forEach { it.save() }
-        GAME_GROUPS.items.filter { it.dirty } .forEach { it.save() }
-	}
-}
-
-fun Entity.save() {
-    val file = SaveConfig.getFile("entity", uid.toString())
-    val data = MapData()
-    write(data)
-    val output = DataOutputStream(FileOutputStream(file))
-    writeMapData(output, data)
-    output.close()
-}
-
-fun Game.save() {
-    val file = SaveConfig.getFile("game", uid.toString())
-    val data = MapData()
-    write(data)
-    val output = DataOutputStream(FileOutputStream(file))
-    writeMapData(output, data)
-    output.close()
-}
-
-fun GameGroup.save() {
-    val file = SaveConfig.getFile("group", uid.toString())
-    val data = MapData()
-    write(data)
-    val output = DataOutputStream(FileOutputStream(file))
-    writeMapData(output, data)
-	output.close()
 }

@@ -21,7 +21,7 @@ object PluginMain : KotlinPlugin(
     JvmPluginDescription(
         id = "io.github.theriverelder.nyarmirai",
         name = "NyarMirai",
-        version = "0.3.5"
+        version = "0.3.6"
     ) {
         author("The River Elder")
 
@@ -36,6 +36,7 @@ object PluginMain : KotlinPlugin(
 
     private fun setup() {
         SaveConfig.dirRoot = this.dataFolder
+        initializePersistentHelpers(SaveConfig.dirRoot)
         registerBuiltinCommands(dispatcher, true)
         loadAll()
         indexNames()

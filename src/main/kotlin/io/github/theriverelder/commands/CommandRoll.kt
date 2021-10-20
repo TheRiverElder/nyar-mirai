@@ -1,8 +1,8 @@
 package io.github.theriverelder.commands
 
 import io.github.theriverelder.data.CommandEnv
-import io.github.theriverelder.util.DICE_1D100
-import io.github.theriverelder.util.Dice
+import io.github.theriverelder.util.math.DICE_1D100
+import io.github.theriverelder.util.math.Dice
 import io.github.theriverelder.util.command.argument.*
 
 fun commandRoll(): LiteralArgumentNode<CommandEnv> {

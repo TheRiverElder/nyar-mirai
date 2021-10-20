@@ -6,7 +6,6 @@ import io.github.theriverelder.data.Game
 import io.github.theriverelder.util.command.argument.LiteralArgumentNode
 import io.github.theriverelder.util.command.argument.command
 import io.github.theriverelder.util.command.argument.end
-import net.mamoe.mirai.contact.nameCardOrNick
 import kotlin.math.floor
 import kotlin.math.pow
 import kotlin.random.Random
