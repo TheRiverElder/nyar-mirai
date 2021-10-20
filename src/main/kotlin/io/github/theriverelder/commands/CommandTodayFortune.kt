@@ -6,6 +6,7 @@ import io.github.theriverelder.data.Game
 import io.github.theriverelder.util.command.argument.LiteralArgumentNode
 import io.github.theriverelder.util.command.argument.command
 import io.github.theriverelder.util.command.argument.end
+import net.mamoe.mirai.contact.nameCardOrNick
 import kotlin.math.floor
 import kotlin.math.pow
 import kotlin.random.Random
@@ -39,7 +40,7 @@ fun commandTodayFortune(): LiteralArgumentNode<CommandEnv> {
 
             val propertyPart = if (entity != null) {
                 val properties = entity.getProperties()
-                val acc =
+                val acc: Int =
                     properties.map { if (it.value == 0) 0 else if (random.nextInt(100) < it.value) 1 else 0 }.sum()
                 val propertyCount = properties.size
                 if (propertyCount == 0) 0.5 else acc / propertyCount.toDouble()
